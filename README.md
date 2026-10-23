@@ -1,6 +1,6 @@
 # 芯梭
 
-芯梭是一款 Android SIM/eSIM 管理与通信应用，支持通过 USB/OTG 连接读卡器或通信模块，使用兼容的 SIM 卡打电话、收发短信，并管理 eSIM。“芯”对应 SIM/eSIM，“梭”寓意连接卡、设备与网络，让通信往来穿梭。
+芯梭是一款 Android SIM/eSIM 管理与通信应用，支持通过 USB/OTG 连接读卡器或通信模块，使用兼容的 SIM 卡打电话、收发短信，并管理 eSIM。在系统允许的机型上，也可通过授权有限使用手机内置的 SIM/eSIM，无需外接读卡器。“芯”对应 SIM/eSIM，“梭”寓意连接卡、设备与网络，让通信往来穿梭。
 
 [下载最新 APK](https://github.com/ZCShou/uicclink/releases/latest) · [查看全部版本](https://github.com/ZCShou/uicclink/releases) · [问题反馈](https://github.com/ZCShou/uicclink/issues)
 
@@ -8,23 +8,47 @@
 
 芯梭围绕“接入卡片、管理卡片、使用卡片通信”组织功能。实际可用能力取决于手机权限、外接设备、SIM/eSIM、运营商与网络支持情况。
 
+界面图中的联系人、号码、短信、任务与卡片资料均为虚构内容，用于展示功能与布局。
+
 ![芯梭的设备接入与通信能力示意](images/connection-overview.png)
 
 AT 通信模块可提供自己的蜂窝通信通道；CCID 读卡器提供卡片访问，通话和短信还需使用兼容的 WiFi Calling 服务。读卡器本身不提供蜂窝射频能力。
 
-### 1.1 SIM 与设备接入
+### 1.1 USB 设备接入
 
-在设备页查看和选择通信卡，集中管理手机内置卡、USB 读卡器和通信模块，减少在不同工具之间切换。
+通过 USB-C 接口或 USB-A 转接头/OTG 线，将兼容的读卡器或通信模块连接到手机，在芯梭中授权并选择设备与卡片。
 
-- 支持在取得相应权限后访问手机内置 SIM。
 - 支持通过 OTG 接入标准 USB CCID（PC/SC）读卡器及兼容的 AT 通信模块。
 - 查看卡片身份、设备信息、网络状态及通信参数，按卡片配置和使用通信能力。
 
-设备页集中展示所选卡片的网络能力、连接步骤和运行状态。下图以手机内置卡为例，卡片与设备身份信息已遮盖。
+下图展示 USB-C / USB 接口智能卡读写器的外观。使用这类外设时，需要确认其 CCID 协议、卡片电压及 APDU 交换能力与应用兼容。
 
-<img src="images/devices.png" alt="芯梭设备与卡片页面，身份信息已遮盖" width="280">
+<img src="images/usb-sim-reader.png" alt="USB-C 智能卡读写器与 USB 转接头" width="600">
 
-### 1.2 eSIM 管理
+读卡器与通信模块承担的角色不同，选择设备时应先确认需要使用的通信方式。
+
+| 接入设备 | 主要用途 | 电话与短信的通信通道 |
+| --- | --- | --- |
+| USB CCID 读卡器 + SIM/eUICC 卡 | 读取卡片、卡片鉴权及兼容的 eSIM 管理 | 需配合支持的 WiFi Calling 服务 |
+| USB AT 通信模块 + SIM 卡 | 模块状态、网络注册、拨号及短信 | 模块自身的蜂窝网络与语音能力 |
+
+设备页集中展示所选卡片的身份信息、网络能力、连接步骤和运行状态，也可在不同设备与卡槽之间选择通信卡。
+
+<img src="images/devices.png" alt="芯梭设备页，展示多张通信卡、完整卡片信息与连接状态" width="320">
+
+### 1.2 手机内置 SIM 授权接入
+
+在支持的手机和系统上，可在“我的 → 设备接入”中授予电话读取权限，再通过 ADB、无线调试或已有 Root 权限中的一种方式，完成应用范围内的 SIM 身份读取与鉴权授权。这条路径可使用手机中已启用的物理 SIM 和 eSIM，不需要额外连接 USB 读卡器。
+
+- 电话读取权限用于发现已启用的卡片；身份读取与鉴权还需要额外授权。
+- 系统允许时，可读取 ICCID、IMSI、归属网络和可用的号码信息，并使用 SIM 鉴权接口建立兼容的 WiFi Calling 连接。
+- ADB、无线调试与 Root 是不同的授权途径，授权能否生效、身份能否读取及鉴权能否成功，仍取决于系统实现、机型与运营商。
+
+该接入方式的支持范围有限：身份读取与鉴权授权不提供任意原始 APDU 访问，也不等于获得完整的内置 eSIM 管理权限。部分内置 eSIM 操作需要进入系统管理页面；系统限制的能力不会因完成这项授权自动开放。
+
+<img src="images/phone-sim-access.png" alt="芯梭手机内置 SIM 的权限状态、授权途径与 USB 设备列表" width="320">
+
+### 1.3 eSIM 管理
 
 对兼容的 eUICC 设备，芯梭提供配置文件查看与管理，并支持通过激活码、二维码和选取的图片或 PDF 导入下载信息。
 
@@ -36,11 +60,11 @@ eSIM 的下载与管理围绕选定的目标卡片进行，操作前应确认设
 
 ![芯梭 eSIM 下载与管理流程示意](images/esim-workflow.png)
 
-设备与卡片管理页面展示已识别的卡片及配置状态。下图为手机内置 eSIM 的实际界面，受系统权限限制的操作会在页面内说明。
+设备与卡片管理页面展示读卡器、目标 eUICC 及已有配置文件，包含运营商、ICCID、IMSI、号码与启用状态。外接 eUICC 与手机内置 eSIM 的可操作范围分别由设备协议和系统权限决定。
 
-<img src="images/esim-management.png" alt="芯梭设备与 eSIM 卡片管理，身份信息已遮盖" width="280">
+<img src="images/esim-management.png" alt="芯梭 USB 读卡器与 eSIM 配置文件管理" width="320">
 
-### 1.3 电话与短信
+### 1.4 电话与短信
 
 通过支持的通信模块，或在运营商支持的情况下使用 WiFi Calling，让所选通信卡参与电话和短信收发。
 
@@ -49,11 +73,15 @@ eSIM 的下载与管理围绕选定的目标卡片进行，操作前应确认设
 - 收发短信、查看会话和收件记录，保留发送草稿。
 - 管理联系人，并从联系人发起通话或短信。
 
-电话页提供拨号键盘与通话入口，短信页提供会话搜索和新短信入口。截图中的通信记录已遮盖。
+电话页提供拨号键盘、联系人与通话记录，支持按所选通信卡发起通话。短信页按联系人或号码组织会话，并显示消息时间和收发状态。
 
-<img src="images/dialpad.png" alt="芯梭电话拨号界面，通信记录已遮盖" width="280"> <img src="images/messages.png" alt="芯梭短信会话与新短信入口" width="280">
+<img src="images/phone-history.png" alt="芯梭多条通话记录与联系人" width="320"> <img src="images/dialpad.png" alt="芯梭号码输入与拨号键盘" width="320">
 
-### 1.4 自动化与诊断
+短信列表展示不同联系人的会话，打开后可以查看完整短信往来，并使用当前选定的通信卡继续发送。
+
+<img src="images/messages.png" alt="芯梭短信会话列表" width="320"> <img src="images/message-conversation.png" alt="芯梭短信收发详情与发送状态" width="320">
+
+### 1.5 自动化与诊断
 
 定时任务帮助处理重复操作，连接状态、通知与日志用于查看执行结果和定位设备接入问题。
 
@@ -63,7 +91,7 @@ eSIM 的下载与管理围绕选定的目标卡片进行，操作前应确认设
 
 自动化页集中管理定时任务；诊断设置可控制日志记录和本地日志容量。
 
-<img src="images/automation.png" alt="芯梭自动化任务入口" width="280"> <img src="images/diagnostics.png" alt="芯梭诊断与日志设置" width="280">
+<img src="images/automation.png" alt="芯梭自动化任务入口" width="320"> <img src="images/diagnostics.png" alt="芯梭诊断与日志设置" width="320">
 
 ## 2. 下载与安装
 
@@ -81,7 +109,7 @@ APK 通过本仓库的 GitHub Releases 发布。下载前请检查版本说明�
 
 安装后可在“我的 → 关于芯梭”查看当前版本、检查更新，并阅读用户协议与隐私政策。
 
-<img src="images/about.png" alt="芯梭 0.12.13 的关于页面" width="280">
+<img src="images/about.png" alt="芯梭 0.12.13 的关于页面" width="320">
 
 ## 3. 使用条件
 
